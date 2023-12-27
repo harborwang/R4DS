@@ -1,0 +1,70 @@
+---
+title: "Chapter 4 learning notes"
+author: "Hao Wang"
+date: "2023-12-27"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(nycflights13)
+```
+
+# 4.1
+
+This is to learn the coding style.
+
+Variables names should only include lowercase letters, numbers and \_.
+
+-   **long name** As a general rule of thumb, it’s better to prefer long, descriptive names that are easy to understand rather than concise names that are fast to type.
+
+-   **Rename**: If you have a bunch of names for related things, do your best to be consistent. It’s easy for inconsistencies to arise when you forget a previous convention, so don’t feel bad if you have to go back and rename things. In general, if you have a bunch of variables that are a variation on a theme, you’re better off giving them a common prefix rather than a common suffix because autocomplete works best on the start of a variable.
+
+-   **file name**:
+
+-- File names should be machine readable: avoid spaces, symbols, and special characters. Don’t rely on case sensitivity to distinguish files. Use '-' to replace space. -- File names should be human readable: use file names to describe what’s in the file. -- File names should play well with default ordering: start file names with numbers so that alphabetical sorting puts them in the order they get used. For example:
+
+```
+01-load-data.R
+02-exploratory-analysis.R
+03-model-approach-1.R
+04-model-approach-2.R
+fig-01.png
+fig-02.png
+report-2022-03-20.qmd
+report-2022-04-02.qmd
+report-draft-notes.txt
+
+```
+
+# 4.6 Exercise
+
+```{r}
+flights |>
+  filter(dest == "IAH") |>
+  group_by(year, month, day) |>
+  summarize(
+    n = n(),
+    delay = mean(arr_delay, na.rm = TRUE)
+  ) |>
+  filter(n > 10)
+
+flights |>
+  filter(
+    carrier == "UA",
+    dest %in% c("IAH", "HOU"),
+    sched_dep_time > 0900,
+    sched_arr_time < 2000
+  ) |>
+  group_by(flight) |>
+  summarize(
+    delay = mean(arr_delay, na.rm = TRUE),
+    cancelled = sum(is.na(arr_delay)),
+    n = n()
+  ) |>
+  filter(n > 10)
+```
