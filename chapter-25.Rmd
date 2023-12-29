@@ -1,0 +1,104 @@
+---
+title: "Chapter 25"
+author: "Hao Wang"
+date: "2023-12-29"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(nycflights13)
+```
+
+## Intro
+
+study notes for chapter 25 function
+
+## 25.2 vector fuction
+
+```{r func rescale01}
+rescale01 <- function(x) {
+  
+  rng <- range(x, na.rm = T, finite = T)
+  (x - rng[1]) / (rng[2] - rng[1])
+}
+
+```
+
+
+```{r}
+x <- c(1:10, Inf)
+rescale01(x)
+#>  [1]   0   0   0   0   0   0   0   0   0   0 NaN
+```
+### 25.2.5 Exercise
+
+Q 1.
+```{r}
+mean(is.na(x))
+mean(is.na(y))
+mean(is.na(z))
+
+x / sum(x, na.rm = TRUE)
+y / sum(y, na.rm = TRUE)
+z / sum(z, na.rm = TRUE)
+
+round(x / sum(x, na.rm = TRUE) * 100, 1)
+round(y / sum(y, na.rm = TRUE) * 100, 1)
+round(z / sum(z, na.rm = TRUE) * 100, 1)
+```
+
+A: calculate the percentage of missing value in a vector
+```{r}
+pct_missing <- function(x){
+  mean(is.na(x))
+}
+```
+
+```{r}
+x <- c(1:99, NA)
+pct_missing(x)
+```
+fraction of sum of a vector
+```{r}
+pct_sum <- function(x){
+  x / sum(x, na.rm = T)
+}
+
+pct_sum(x)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

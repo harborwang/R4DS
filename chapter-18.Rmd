@@ -1,0 +1,157 @@
+---
+title: "Chapter 18 Missing values learning notes"
+author: "Hao Wang"
+date: "2023-12-27"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# library
+```{r}
+library(tidyverse)
+library(nycflights13)
+```
+
+# 18.2
+
+```{r}
+treatment <- tribble(
+  ~person,           ~treatment, ~response,
+  "Derrick Whitmore", 1,         7,
+  NA,                 2,         10,
+  NA,                 3,         NA,
+  "Katherine Burke",  1,         4
+)
+
+treatment
+```
+
+Use “last observation carried forward” to fill the NA.
+
+```{r}
+treatment |> 
+  fill(everything())
+```
+
+# 18.3 implicit missing values
+
+```{r}
+stocks <- tibble(
+  year  = c(2020, 2020, 2020, 2020, 2021, 2021, 2021),
+  qtr   = c(   1,    2,    3,    4,    2,    3,    4),
+  price = c(1.88, 0.59, 0.35,   NA, 0.92, 0.17, 2.66)
+)
+stocks
+```
+
+```{r}
+stocks |>
+  pivot_wider(
+    names_from = qtr, 
+    values_from = price
+  )
+#> # A tibble: 2 × 5
+#>    year   `1`   `2`   `3`   `4`
+#>   <dbl> <dbl> <dbl> <dbl> <dbl>
+#> 1  2020  1.88  0.59  0.35 NA   
+#> 2  2021 NA     0.92  0.17  2.66
+```
+Use the function complete().
+
+tidyr::complete() allows you to generate explicit missing values by providing a set of variables that define the combination of rows that should exist.
+
+```{r}
+stocks |> 
+  complete(year, qtr)
+```
+ Provide more years to the data.
+ 
+```{r}
+stocks |> 
+  complete(year = 2019:2021, qtr)
+```
+
+Use anti_join(). airports and planes are two tables in nycflights13.
+
+```{r}
+flights |> 
+  distinct(faa = dest) |> 
+  anti_join(airports)
+#> Joining with `by = join_by(faa)`
+#> # A tibble: 4 × 1
+#>   faa  
+#>   <chr>
+#> 1 BQN  
+#> 2 SJU  
+#> 3 STT  
+#> 4 PSE
+
+flights |> 
+  distinct(tailnum) |> 
+  anti_join(planes)
+#> Joining with `by = join_by(tailnum)`
+#> # A tibble: 722 × 1
+#>   tailnum
+#>   <chr>  
+#> 1 N3ALAA 
+#> 2 N3DUAA 
+#> 3 N542MQ 
+#> 4 N730MQ 
+#> 5 N9EAMQ 
+#> 6 N532UA 
+#> # ℹ 716 more rows
+```
+
+# 18.4
+
+```{r}
+health <- tibble(
+  name   = c("Ikaia", "Oletta", "Leriah", "Dashay", "Tresaun"),
+  smoker = factor(c("no", "no", "no", "no", "no"), levels = c("yes", "no")),
+  age    = c(34, 88, 75, 47, 56),
+)
+
+health
+```
+```{r}
+health |> count(smoker)
+```
+Keep all levels in the factor.
+
+```{r}
+health |> count(smoker, .drop = F)
+```
+In ggplot()
+```{r}
+health |> 
+  ggplot(aes(x = smoker)) +
+  geom_bar() +
+  scale_x_discrete()
+
+health |> 
+  ggplot(aes(x = smoker)) +
+  geom_bar() +
+  scale_x_discrete(drop = F)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
