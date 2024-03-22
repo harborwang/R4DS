@@ -70,9 +70,60 @@ pct_sum <- function(x){
 pct_sum(x)
 ```
 
+q2: In the second variant of rescale01(), infinite values are left unchanged. 
+Can you rewrite rescale01() so that -Inf is mapped to 0, and Inf is mapped to 1?
 
+```{r}
+rescale02 <- function(x) {
+  x <- case_when(
+    x == -Inf ~ 0,
+    x == Inf ~ 1,
+    .default = x
+  )
+  rng <- range(x, na.rm = T, finite = T)
+  (x - rng[1]) / (rng[2] - rng[1])
+}
+```
 
+```{r}
+y <- c(1:10, -Inf, Inf)
+rescale02(y)
+```
+q 6: Read the documentation to figure out what the following functions do. Why are they useful even though they are so short?
 
+```{r}
+is_directory <- function(x) {
+  file.info(x)$isdir
+}
+is_readable <- function(x) {
+  file.access(x, 4) == 0
+}
+```
+
+```{r}
+file.info("chapter-4.Rmd")
+
+file.access("chapter-4.Rmd", 4)
+```
+### 25.3.4 Data-masking vs. tidy-selection
+
+Sometimes you want to select variables inside a function that uses data-masking instead of tidy-selection. For example, the group_by() in following function count_missing(). You need to use the function pick() with embrace to make the data-masking work.
+
+```{r}
+count_missing <- function(df, group_vars, x_var) {
+  df |> 
+    group_by(pick({{ group_vars }})) |> 
+    summarize(
+      n_miss = sum(is.na({{ x_var }})),
+      .groups = "drop"
+  )
+}
+
+```
+
+```{r}
+flights |> count_missing(c(year, month), dep_time)
+```
 
 
 
